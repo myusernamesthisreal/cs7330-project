@@ -1,0 +1,91 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Degree {
+  name   String
+  level String
+  @@id([name, level])
+  DegreeCourses DegreeCourses[]
+  evaluations CourseEvaluation[]
+}
+
+model Course {
+  courseNumber String @id
+  name String
+  isCore Boolean
+  courseDegrees DegreeCourses[]
+  sections Section[]
+  objectives CourseObjective[]
+}
+
+model DegreeCourses {
+  degree Degree @relation(fields: [degreeName, degreeLevel], references: [name, level])
+  degreeName String
+  degreeLevel String
+  course Course @relation(fields: [courseNumber], references: [courseNumber])
+  courseNumber String
+  @@id([degreeName, degreeLevel, courseNumber])
+}
+
+model Instructor {
+  id_number String @id
+  name String
+  sections Section[]
+}
+
+model Section {
+  sectionNumber String @id
+  course Course @relation(fields: [courseNumber], references: [courseNumber])
+  courseNumber String
+  instructor Instructor @relation(fields: [instructorId], references: [id_number])
+  instructorId String
+  semester String
+  year Int
+  num_students Int
+  evaluations CourseEvaluation[]
+}
+
+model LearningObjective {
+  id Int @id @default(autoincrement())
+  title String
+  description String
+  courses CourseObjective[]
+  evaluations CourseEvaluation[]
+}
+
+model CourseObjective {
+  course Course @relation(fields: [courseNumber], references: [courseNumber])
+  courseNumber String
+  learningObjective LearningObjective @relation(fields: [learningObjectiveId], references: [id])
+  learningObjectiveId Int
+  @@id([courseNumber, learningObjectiveId])
+}
+
+model CourseEvaluation {
+  learningObjective LearningObjective @relation(fields: [learningObjectiveId], references: [id])
+  learningObjectiveId  Int
+  section Section @relation(fields: [sectionNumber], references: [sectionNumber])
+  sectionNumber String
+  degree Degree @relation(fields: [degreeName, degreeLevel], references: [name, level])
+  degreeName String
+  degreeLevel String
+  type String
+  paragraph String
+  numAs Int
+  numBs Int
+  numCs Int
+  numFs Int
+  @@id([learningObjectiveId, sectionNumber, degreeName, degreeLevel])
+}
