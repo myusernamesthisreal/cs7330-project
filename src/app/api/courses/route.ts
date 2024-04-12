@@ -11,7 +11,7 @@ export async function POST(req: NextRequest) {
     try {
         const data = await req.json();
         const { name, courseNumber, isCore } = data;
-        if (!name || !courseNumber) return NextResponse.json({ message: "Missing required fields Name, Code, Credits, DegreeId" }, { status: 400 });
+        if (!name || !courseNumber) return NextResponse.json({ message: "Missing required fields name, courseNumber, isCore" }, { status: 400 });
         if (typeof isCore !== "boolean") return NextResponse.json({ message: "isCore must be a boolean" }, { status: 400 });
         const course = await prisma.course.create({
             data: {
