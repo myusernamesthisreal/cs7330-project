@@ -3,6 +3,40 @@ import { Prisma } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
+    if (req.nextUrl.searchParams.has("degreeName") && req.nextUrl.searchParams.has("degreeLevel")) {
+        const degreeName = req.nextUrl.searchParams.get("degreeName") ?? "";
+        const degreeLevel = req.nextUrl.searchParams.get("degreeLevel") ?? "";
+        const courses = await prisma.course.findMany({
+            where: {
+                courseDegrees: {
+                    some: {
+                        degreeName,
+                        degreeLevel,
+                    }
+                }
+            }
+        });
+        return NextResponse.json(courses, { status: 200 });
+    } else if (req.nextUrl.searchParams.has("query")) {
+        const query = req.nextUrl.searchParams.get("query") ?? "";
+        const courses = await prisma.course.findMany({
+            where: {
+                OR: [
+                    {
+                        name: {
+                            contains: query,
+                        }
+                    },
+                    {
+                        courseNumber: {
+                            contains: query,
+                        }
+                    }
+                ]
+            }
+        });
+        return NextResponse.json(courses, { status: 200 });
+    }
     const courses = await prisma.course.findMany();
     return NextResponse.json(courses, { status: 200 });
 }
