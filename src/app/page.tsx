@@ -1,5 +1,4 @@
 "use client"
-import Image from "next/image";
 import { useRouter } from "next/navigation";
 
 export default function Home() {
@@ -9,6 +8,11 @@ export default function Home() {
       <div className="z-10 max-w-5xl w-full items-center justify-between text-sm lg:flex">
         <div className="flex flex-col items-center justify-between w-full">
           <h1 className="text-4xl font-bold text-center">Welcome to the Program Evaluation Utility</h1>
+          <h2 className="text-2xl font-bold text-center mt-4">View:</h2>
+          <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4" onClick={() => router.push("/degrees")}>
+            View Degrees
+          </button>
+          <h2 className="text-2xl font-bold text-center mt-4">Create New:</h2>
           <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4" onClick={() => router.push("/degrees/new")}>
             Add Degree
           </button>
