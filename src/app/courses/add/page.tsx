@@ -1,17 +1,7 @@
 "use client"
+import { Course, Degree } from "@prisma/client";
 import { useRouter, useSearchParams } from "next/navigation";
-import { FormEvent, useEffect, useState } from "react"
-
-type Degree = {
-    name: string;
-    level: string;
-}
-
-type Course = {
-    name: string,
-    courseNumber: string,
-    isCore: boolean,
-}
+import { useEffect, useState } from "react"
 
 export default function NewCourse() {
     const router = useRouter();
