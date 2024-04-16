@@ -58,7 +58,11 @@ export default function NewSection() {
                     </div>
                     <div className="w-full">
                         <p className="text-sm text-gray-300 mb-2">Semester:</p>
-                        <input type="text" placeholder="Semester" value={semester} onChange={(e) => setSemester(e.target.value)} className="p-2 border border-gray-300 text-black rounded-lg w-full mb-4" />
+                        <select value={semester} onChange={(e) => setSemester(e.target.value)} className="p-2 border border-gray-300 text-black rounded-lg w-full mb-4">
+                            <option value="">Select Semester</option>
+                            <option value="Fall">Fall</option>
+                            <option value="Spring">Spring</option>
+                        </select>
                     </div>
                     <div className="w-full">
                         <p className="text-sm text-gray-300 mb-2">Year:</p>
