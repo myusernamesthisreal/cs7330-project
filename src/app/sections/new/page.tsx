@@ -62,6 +62,7 @@ export default function NewSection() {
                             <option value="">Select Semester</option>
                             <option value="Fall">Fall</option>
                             <option value="Spring">Spring</option>
+                            <option value="Summer">Summer</option>
                         </select>
                     </div>
                     <div className="w-full">
