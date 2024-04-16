@@ -36,6 +36,15 @@ export async function GET(req: NextRequest) {
             }
         });
         return NextResponse.json(courses, { status: 200 });
+    } else if (req.nextUrl.searchParams.has("courseNumber")) {
+        const courseNumber = req.nextUrl.searchParams.get("courseNumber") ?? "";
+        const course = await prisma.course.findUnique({
+            where: {
+                courseNumber,
+            }
+        });
+        if (!course) return NextResponse.json({ reason: "Course not found" }, { status: 404 });
+        return NextResponse.json(course, { status: 200 });
     }
     const courses = await prisma.course.findMany();
     return NextResponse.json(courses, { status: 200 });
