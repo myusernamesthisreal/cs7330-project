@@ -11,7 +11,7 @@ export async function POST(req: NextRequest) {
     try {
         const data = await req.json();
         const { name, level } = data;
-        if (!name || !level) return NextResponse.json({ message: "Missing required fields Name, Level" }, { status: 400 });
+        if (!name || !level) return NextResponse.json({ reason: "Missing required fields Name, Level" }, { status: 400 });
         const degree = await prisma.degree.create({
             data: {
                 name,

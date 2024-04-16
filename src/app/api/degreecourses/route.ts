@@ -11,9 +11,9 @@ export async function PUT(req: NextRequest) {
     try {
         const data = await req.json();
         const { associations } = data;
-        if (!Array.isArray(associations)) return NextResponse.json({ message: "Associations must be an array" }, { status: 400 });
+        if (!Array.isArray(associations)) return NextResponse.json({ reason: "Associations must be an array" }, { status: 400 });
         associations.forEach(association => {
-            if (!association.degreeName || !association.degreeLevel || !association.courseNumber) return NextResponse.json({ message: "Missing required fields degreeName, degreeLevel, courseId in associations" }, { status: 400 });
+            if (!association.degreeName || !association.degreeLevel || !association.courseNumber) return NextResponse.json({ reason: "Missing required fields degreeName, degreeLevel, courseId in associations" }, { status: 400 });
         });
 
         const degreecourses = await prisma.degreeCourses.createMany({
@@ -38,9 +38,9 @@ export async function DELETE(req: NextRequest) {
     try {
         const data = await req.json();
         const { associations } = data;
-        if (!Array.isArray(associations)) return NextResponse.json({ message: "Associations must be an array" }, { status: 400 });
+        if (!Array.isArray(associations)) return NextResponse.json({ reason: "Associations must be an array" }, { status: 400 });
         associations.forEach(association => {
-            if (!association.degreeName || !association.degreeLevel || !association.courseNumber) return NextResponse.json({ message: "Missing required fields degreeName, degreeLevel, courseId in associations" }, { status: 400 });
+            if (!association.degreeName || !association.degreeLevel || !association.courseNumber) return NextResponse.json({ reason: "Missing required fields degreeName, degreeLevel, courseId in associations" }, { status: 400 });
         });
 
         const degreecourses = await prisma.degreeCourses.deleteMany({
