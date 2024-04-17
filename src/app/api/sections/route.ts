@@ -1,6 +1,5 @@
 import prisma from "@/lib/db";
 import { Prisma } from "@prisma/client";
-import exp from "constants";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
@@ -32,7 +31,7 @@ export async function POST(req: NextRequest) {
         if (!instructor) {
             return NextResponse.json({ reason: "Instructor does not exist" }, { status: 400 });
         }
-        
+
         const section = await prisma.section.create({
             data: {
                 sectionNumber,

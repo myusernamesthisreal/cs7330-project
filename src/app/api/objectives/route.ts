@@ -15,6 +15,34 @@ export async function GET(req: NextRequest) {
             }
         });
         return NextResponse.json(objectives, { status: 200 });
+    } else if (req.nextUrl.searchParams.has("degreeName") && req.nextUrl.searchParams.has("degreeLevel")) {
+        const degreeName = req.nextUrl.searchParams.get("degreeName") ?? "";
+        const degreeLevel = req.nextUrl.searchParams.get("degreeLevel") ?? "";
+        const objectivesQuery = await prisma.degreeCourses.findMany({
+            where: {
+                degreeName,
+                degreeLevel,
+            },
+            include: {
+                course: {
+                    select: {
+                        objectives: {
+                            include: {
+                                learningObjective: true,
+                            },
+                        },
+                    }
+                },
+            },
+            distinct: ["courseNumber"],
+        });
+        const objectives = objectivesQuery.flatMap(({ course }) => course.objectives.map((objective) => {
+            return {
+                ...objective.learningObjective,
+                courseNumber: objective.courseNumber,
+            };
+        }));
+        return NextResponse.json(objectives, { status: 200 });
     }
     const title = req.nextUrl.searchParams.get("title");
     const where = title ? { title: { contains: title, mode: 'insensitive' } } : {};
