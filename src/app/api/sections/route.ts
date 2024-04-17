@@ -18,19 +18,19 @@ export async function POST(req: NextRequest) {
         const data = await req.json();
         const { sectionNumber, courseNumber, instructorId, semester, year, num_students } = data;
         if (!sectionNumber || !courseNumber || !instructorId || !semester || !year || !num_students) {
-            return NextResponse.json({ message: "Missing required fields" }, { status: 400 });
+            return NextResponse.json({ reason: "Missing required fields" }, { status: 400 });
         }
 
         // Check if the course exists
         const course = await prisma.course.findUnique({ where: { courseNumber } });
         if (!course) {
-            return NextResponse.json({ message: "Course does not exist" }, { status: 400 });
+            return NextResponse.json({ reason: "Course does not exist" }, { status: 400 });
         }
 
         // Check if the instructor exists
         const instructor = await prisma.instructor.findUnique({ where: { id_number: instructorId } });
         if (!instructor) {
-            return NextResponse.json({ message: "Instructor does not exist" }, { status: 400 });
+            return NextResponse.json({ reason: "Instructor does not exist" }, { status: 400 });
         }
         
         const section = await prisma.section.create({
