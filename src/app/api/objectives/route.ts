@@ -4,6 +4,18 @@ import { NextRequest, NextResponse } from "next/server";
 import { Prisma } from "@prisma/client";
 
 export async function GET(req: NextRequest) {
+    if (req.nextUrl.searchParams.has("courseNumber")) {
+        const courseNumber = req.nextUrl.searchParams.get("courseNumber") ?? "";
+        const objectives = await prisma.courseObjective.findMany({
+            where: {
+                courseNumber,
+            },
+            include: {
+                learningObjective: true,
+            }
+        });
+        return NextResponse.json(objectives, { status: 200 });
+    }
     const title = req.nextUrl.searchParams.get("title");
     const where = title ? { title: { contains: title, mode: 'insensitive' } } : {};
     const objectives = await prisma.learningObjective.findMany({ where });
