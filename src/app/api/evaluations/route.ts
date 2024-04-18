@@ -3,7 +3,6 @@ import prisma from "@/lib/db"; // make sure this import path aligns with your pr
 import { NextRequest, NextResponse } from "next/server";
 import { Prisma } from "@prisma/client";
 
-
 export async function POST(req: NextRequest) {
     try {
         const data = await req.json();

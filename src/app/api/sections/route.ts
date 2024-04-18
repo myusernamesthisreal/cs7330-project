@@ -4,6 +4,35 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
     try {
+        if (req.nextUrl.searchParams.has("degreeName") && req.nextUrl.searchParams.has("degreeLevel") && req.nextUrl.searchParams.has("semester") && req.nextUrl.searchParams.has("year") && req.nextUrl.searchParams.has("InstructorId")) {
+            const degreeName = req.nextUrl.searchParams.get("degreeName") ?? "";
+            const degreeLevel = req.nextUrl.searchParams.get("degreeLevel") ?? "";
+            const semester = req.nextUrl.searchParams.get("semester") ?? "";
+            const year = req.nextUrl.searchParams.get("year") ?? "";
+            const InstructorId = req.nextUrl.searchParams.get("InstructorId") ?? "";
+            const sections = await prisma.section.findMany({
+                where: {
+                    AND: [
+                        {
+                            course: {
+                                courseDegrees: {
+                                    some: {
+                                        degree: {
+                                            name: degreeName,
+                                            level: degreeLevel,
+                                        },
+                                    },
+                                }
+                            }
+                        },
+                        { semester },
+                        { year: Number(year) },
+                        { instructorId: InstructorId },
+                    ],
+                },
+            });
+            return NextResponse.json(sections, { status: 200 });
+        }
         const sections = await prisma.section.findMany();
         return NextResponse.json(sections, { status: 200 });
     } catch (error) {
