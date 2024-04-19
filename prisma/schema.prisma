@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -14,78 +8,91 @@ datasource db {
 }
 
 model Degree {
-  name   String
-  level String
-  @@id([name, level])
+  name          String
+  level         String
+  evaluations   CourseEvaluation[]
   DegreeCourses DegreeCourses[]
-  evaluations CourseEvaluation[]
+
+  @@id([name, level])
 }
 
 model Course {
-  courseNumber String @id
-  name String
-  isCore Boolean
+  courseNumber  String            @id
+  name          String
+  isCore        Boolean
+  objectives    CourseObjective[]
   courseDegrees DegreeCourses[]
-  sections Section[]
-  objectives CourseObjective[]
+  sections      Section[]
 }
 
 model DegreeCourses {
-  degree Degree @relation(fields: [degreeName, degreeLevel], references: [name, level])
-  degreeName String
-  degreeLevel String
-  course Course @relation(fields: [courseNumber], references: [courseNumber])
+  degreeName   String
+  degreeLevel  String
   courseNumber String
+  course       Course @relation(fields: [courseNumber], references: [courseNumber])
+  degree       Degree @relation(fields: [degreeName, degreeLevel], references: [name, level])
+
   @@id([degreeName, degreeLevel, courseNumber])
+  @@index([courseNumber], map: "DegreeCourses_courseNumber_fkey")
 }
 
 model Instructor {
-  id_number String @id
-  name String
-  sections Section[]
+  id_number String    @id
+  name      String
+  sections  Section[]
 }
 
 model Section {
-  sectionNumber String @id
-  course Course @relation(fields: [courseNumber], references: [courseNumber])
-  courseNumber String
-  instructor Instructor @relation(fields: [instructorId], references: [id_number])
-  instructorId String
-  semester String
-  year Int
-  num_students Int
-  evaluations CourseEvaluation[]
+  sectionNumber String             @id
+  courseNumber  String
+  instructorId  String
+  semester      String
+  year          Int
+  num_students  Int
+  startDate     DateTime
+  endDate       DateTime
+  evaluations   CourseEvaluation[]
+  course        Course             @relation(fields: [courseNumber], references: [courseNumber])
+  instructor    Instructor         @relation(fields: [instructorId], references: [id_number])
+
+  @@index([courseNumber], map: "Section_courseNumber_fkey")
+  @@index([instructorId], map: "Section_instructorId_fkey")
 }
 
 model LearningObjective {
-  id Int @id @default(autoincrement())
-  title String
+  id          Int                @id @default(autoincrement())
+  title       String
   description String
-  courses CourseObjective[]
   evaluations CourseEvaluation[]
+  courses     CourseObjective[]
 }
 
 model CourseObjective {
-  course Course @relation(fields: [courseNumber], references: [courseNumber])
-  courseNumber String
-  learningObjective LearningObjective @relation(fields: [learningObjectiveId], references: [id])
+  courseNumber        String
   learningObjectiveId Int
+  course              Course            @relation(fields: [courseNumber], references: [courseNumber])
+  learningObjective   LearningObjective @relation(fields: [learningObjectiveId], references: [id])
+
   @@id([courseNumber, learningObjectiveId])
+  @@index([learningObjectiveId], map: "CourseObjective_learningObjectiveId_fkey")
 }
 
 model CourseEvaluation {
-  learningObjective LearningObjective @relation(fields: [learningObjectiveId], references: [id])
-  learningObjectiveId  Int
-  section Section @relation(fields: [sectionNumber], references: [sectionNumber])
-  sectionNumber String
-  degree Degree @relation(fields: [degreeName, degreeLevel], references: [name, level])
-  degreeName String
-  degreeLevel String
-  type String
-  paragraph String
-  numAs Int
-  numBs Int
-  numCs Int
-  numFs Int
+  learningObjectiveId Int
+  sectionNumber       String
+  degreeName          String
+  degreeLevel         String
+  type                String
+  paragraph           String
+  numAs               Int
+  numBs               Int
+  numCs               Int
+  numFs               Int
+  degree              Degree            @relation(fields: [degreeName, degreeLevel], references: [name, level])
+  learningObjective   LearningObjective @relation(fields: [learningObjectiveId], references: [id])
+  section             Section           @relation(fields: [sectionNumber], references: [sectionNumber])
+
   @@id([learningObjectiveId, sectionNumber, degreeName, degreeLevel])
+  @@index([degreeName, degreeLevel], map: "CourseEvaluation_degreeName_degreeLevel_fkey")
+  @@index([sectionNumber], map: "CourseEvaluation_sectionNumber_fkey")
 }

@@ -2,10 +2,25 @@ import prisma from "@/lib/db";
 import { Prisma } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 
+// Define the type of semesterDates
+const semesterDates: Record<string, { start: string; end: string }> = {
+    Spring: { start: "-01-15", end: "-05-01" },
+    Summer: { start: "-06-01", end: "-08-01" },
+    Fall: { start: "-08-15", end: "-12-15" }
+} as const;
+
 export async function GET(req: NextRequest) {
     try {
         const sections = await prisma.section.findMany();
-        return NextResponse.json(sections, { status: 200 });
+
+        // Format the dates to a date-only string
+        const formattedSections = sections.map(section => ({
+            ...section,
+            startDate: section.startDate.toISOString().split('T')[0],
+            endDate: section.endDate.toISOString().split('T')[0]
+        }));
+
+        return NextResponse.json(formattedSections, { status: 200 });
     } catch (error) {
         console.error(error);
         return NextResponse.json({ reason: "Something went wrong" }, { status: 500 });
@@ -32,6 +47,10 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ reason: "Instructor does not exist" }, { status: 400 });
         }
 
+        // Calculate the start and end dates based on semester and year
+        const startDate = new Date(`${year}${semesterDates[semester].start}`);
+        const endDate = new Date(`${year}${semesterDates[semester].end}`);
+
         const section = await prisma.section.create({
             data: {
                 sectionNumber,
@@ -40,9 +59,19 @@ export async function POST(req: NextRequest) {
                 semester,
                 year,
                 num_students,
+                startDate,
+                endDate
             }
         });
-        return NextResponse.json(section);
+
+        // Format the dates to a date-only string
+        const formattedSection = {
+            ...section,
+            startDate: section.startDate.toISOString().split('T')[0],
+            endDate: section.endDate.toISOString().split('T')[0]
+        };
+
+        return NextResponse.json(formattedSection, { status: 201 });
     } catch (error) {
         console.error(error);
         if (error instanceof Prisma.PrismaClientKnownRequestError) {
