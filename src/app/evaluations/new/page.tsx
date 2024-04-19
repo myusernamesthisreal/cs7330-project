@@ -229,6 +229,7 @@ export default function NewEvaluation() {
                                         <p className="text-sm text-gray-300">{objective.description}</p>
                                         <div className="flex flex-grow" />
                                         <button onClick={(e) => handleStepThree(e, objective)} className="bg-blue-500 text-white rounded-lg p-2 mt-4 w-full">{objective.evaluation !== null ? "Update" : "Create"}</button>
+                                        {objective.evaluaton !== null && <button onClick={(e) => router.push(`/evaluations/copy?objectiveId=${objective.evaluation.learningObjectiveId}&sectionNumber=${objective.evaluation.sectionNumber}&degreeName=${objective.evaluation.degreeName}&degreeLevel=${objective.evaluation.degreeLevel}`)} className="bg-blue-500 text-white rounded-lg p-2 mt-4 w-full">Duplicate</button>}
                                     </div>
                                 ))}
                             </div>

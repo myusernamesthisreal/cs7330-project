@@ -45,6 +45,7 @@ export async function GET(req: NextRequest) {
     const params = req.nextUrl.searchParams;
     const sectionNumber = params.get('sectionNumber');
     const degreeName = params.get('degreeName');
+    const degreeLevel = params.get('degreeLevel');
     const learningObjectiveId = params.get('learningObjectiveId');
 
     try {
@@ -52,6 +53,7 @@ export async function GET(req: NextRequest) {
             where: {
                 ...(sectionNumber ? { sectionNumber } : {}),
                 ...(degreeName ? { degreeName } : {}),
+                ...(degreeLevel ? { degreeLevel } : {}),
                 ...(learningObjectiveId ? { learningObjectiveId: parseInt(learningObjectiveId) } : {})
             },
             include: {
