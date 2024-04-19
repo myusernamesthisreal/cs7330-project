@@ -1,5 +1,5 @@
 "use client"
-import { CourseEvaluation, LearningObjective, Section } from "@prisma/client";
+import { CourseEvaluation, Instructor, LearningObjective, Section } from "@prisma/client";
 import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
 
@@ -11,7 +11,7 @@ export default function NewEvaluation() {
     const [degreeLevel, setDegreeLevel] = useState("");
     const [semester, setSemester] = useState("");
     const [year, setYear] = useState("");
-    const [InstructorId, setInstructorId] = useState("");
+    const [instructorId, setInstructorId] = useState("");
     const [sections, setSections] = useState([] as Section[]);
     const [selectedSection, setSelectedSection] = useState({} as Section);
     const [evaluations, setEvaluations] = useState([] as CourseEvaluation[]);
@@ -25,10 +25,13 @@ export default function NewEvaluation() {
     const [numCs, setNumCs] = useState(0);
     const [numFs, setNumFs] = useState(0);
     const [paragraph, setParagraph] = useState("");
+    const [iSearchQuery, setISearchQuery] = useState("");
+    const [instructors, setInstructors] = useState([] as Instructor[]);
+    const [searched, setSearched] = useState(false);
 
     const handleStepOne = async (e: FormEvent<HTMLButtonElement>) => {
         e.preventDefault();
-        const res = await fetch(`/api/sections?degreeName=${degreeName}&degreeLevel=${degreeLevel}&semester=${semester}&year=${year}&InstructorId=${InstructorId}`);
+        const res = await fetch(`/api/sections?degreeName=${degreeName}&degreeLevel=${degreeLevel}&semester=${semester}&year=${year}&InstructorId=${instructorId}`);
         if (res.ok) {
             const data = await res.json();
             setSections(data);
@@ -38,6 +41,13 @@ export default function NewEvaluation() {
             setError(data.reason || "Something went wrong");
         }
     }
+
+    const handleSearch = async () => {
+        const res = await fetch(`/api/instructors?query=${iSearchQuery}`);
+        const data = await res.json();
+        setInstructors(data);
+        setSearched(true);
+    };
 
     const handleStepTwo = async (e: FormEvent<HTMLButtonElement>, section: Section) => {
         e.preventDefault();
@@ -88,7 +98,7 @@ export default function NewEvaluation() {
 
     const handleSubmit = async (e: FormEvent<HTMLButtonElement>) => {
         e.preventDefault();
-        if (!selectedEvaluation) {
+        if (!selectedEvaluation.learningObjectiveId) {
             const res = await fetch("/api/evaluations", {
                 method: "POST",
                 body: JSON.stringify({
@@ -168,10 +178,23 @@ export default function NewEvaluation() {
                             <p className="text-sm text-gray-300 mb-2">Year</p>
                             <input type="text" placeholder="Year" value={year} onChange={(e) => setYear(e.target.value)} className="p-2 border border-gray-300 text-black rounded-lg w-full mb-4" />
                         </div>
-                        <div className="w-full">
-                            <p className="text-sm text-gray-300 mb-2">Instructor ID</p>
-                            <input type="text" placeholder="Instructor ID" value={InstructorId} onChange={(e) => setInstructorId(e.target.value)} className="p-2 border border-gray-300 text-black rounded-lg w-full mb-4" />
-                        </div>
+                        <div className="w-full mb-4">
+                        <p className="text-sm text-gray-300 mb-2">Search for Instructor</p>
+                        <input type="text" placeholder="Instructor Name/ID" value={iSearchQuery} onChange={(e) => setISearchQuery(e.target.value)} className="p-2 border border-gray-300 text-black rounded-lg w-full mb-4" />
+                        <button className="p-2 bg-blue-500 text-white w-full rounded-lg" onClick={handleSearch}>Search</button>
+                        {searched && (
+                            <div className="mt-4">
+                                <p className="text-sm text-gray-300 mb-2">Select Instructor:</p>
+                                <select value={instructorId} onChange={(e) => setInstructorId(e.target.value)} className="p-2 border border-gray-300 text-black rounded-lg w-full mb-4">
+                                    <option value="">Select</option>
+                                    {instructors.map((i, index) => (
+                                        <option key={index} value={i.id_number}>{i.name}</option>
+                                    ))}
+                                </select>
+                            </div>
+                        )}
+                        {(instructors.length === 0 && searched) && <p className="text-sm text-gray-300 mt-4">No instructors found</p>}
+                    </div>
                         <button onClick={handleStepOne} className="bg-blue-500 text-white rounded-lg p-2 w-full mt-4">Next</button>
                     </>
                     }
@@ -180,11 +203,11 @@ export default function NewEvaluation() {
                         <div className="w-full">
                             <p className="text-sm text-gray-300 mb-2">Section</p>
                             <div className="grid grid-cols-3 gap-4">
-                                {sections.map((section, index) => (
+                                {sections.map((section: any, index) => (
                                     <div key={index} className="border p-4 rounded-lg">
                                         <p className="text-xl font-bold text-gray-300">Section {section.sectionNumber}</p>
                                         <p className="text-sm text-gray-300">{section.courseNumber}</p>
-                                        <p className="text-sm text-gray-300">Instructor: {section.instructorId}</p>
+                                        <p className="text-sm text-gray-300">{section.instructor.name}</p>
                                         <p className="text-sm text-gray-300">{section.semester} {section.year}</p>
                                         <button onClick={(e) => handleStepTwo(e, section)} className="bg-blue-500 text-white rounded-lg p-2 mt-4 w-full">Select</button>
                                     </div>

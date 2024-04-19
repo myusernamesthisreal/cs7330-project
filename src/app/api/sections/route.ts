@@ -37,6 +37,9 @@ export async function GET(req: NextRequest) {
                         { instructorId: InstructorId },
                     ],
                 },
+                include: {
+                    instructor: true,
+                }
             });
             return NextResponse.json(sections, { status: 200 });
         }
