@@ -38,11 +38,11 @@ export default function NewObjective() {
                     <h1 className="text-4xl font-bold text-center mb-4">New Objective</h1>
                     <div className="w-full">
                         <p className="text-sm text-gray-300 mb-2">Objective Title:</p>
-                        <input type="text" placeholder="Course Name" value={title} onChange={(e) => setTitle(e.target.value)} className="p-2 border border-gray-300 text-black rounded-lg w-full mb-4" />
+                        <input type="text" placeholder="Objective Title" value={title} onChange={(e) => setTitle(e.target.value)} className="p-2 border border-gray-300 text-black rounded-lg w-full mb-4" />
                     </div>
                     <div className="w-full">
                         <p className="text-sm text-gray-300 mb-2">Objective Description:</p>
-                        <input type="textarea" placeholder="Course Number" value={description} onChange={(e) => setDescription(e.target.value)} className="p-2 border border-gray-300 text-black rounded-lg w-full mb-4" />
+                        <input type="textarea" placeholder="Objective Description" value={description} onChange={(e) => setDescription(e.target.value)} className="p-2 border border-gray-300 text-black rounded-lg w-full mb-4" />
                     </div>
                     <button disabled={submitted} className="p-2 bg-blue-500 text-white rounded-lg w-full" type="submit" onClick={handleSubmit}>Create Objective</button>
                     {error && <p className="text-red-500 text-sm mt-4">{error}</p>}
