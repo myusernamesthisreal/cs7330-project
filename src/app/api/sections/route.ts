@@ -1,20 +1,18 @@
 import prisma from "@/lib/db";
 import { Prisma } from "@prisma/client";
-import exp from "constants";
 import { NextRequest, NextResponse } from "next/server";
-
 
 // Define the type of semesterDates
 const semesterDates: Record<string, { start: string; end: string }> = {
     Spring: { start: "-01-15", end: "-05-01" },
     Summer: { start: "-06-01", end: "-08-01" },
     Fall: { start: "-08-15", end: "-12-15" }
-}as const;
-                    
+} as const;
+
 export async function GET(req: NextRequest) {
     try {
         const sections = await prisma.section.findMany();
-        
+
         // Format the dates to a date-only string
         const formattedSections = sections.map(section => ({
             ...section,
@@ -48,7 +46,7 @@ export async function POST(req: NextRequest) {
         if (!instructor) {
             return NextResponse.json({ reason: "Instructor does not exist" }, { status: 400 });
         }
-        
+
         // Calculate the start and end dates based on semester and year
         const startDate = new Date(`${year}${semesterDates[semester].start}`);
         const endDate = new Date(`${year}${semesterDates[semester].end}`);

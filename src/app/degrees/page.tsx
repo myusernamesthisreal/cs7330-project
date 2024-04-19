@@ -25,6 +25,7 @@ export default function ViewDegrees() {
                             <p className="text-lg font-bold">{degree.name}</p>
                             <p className="text-sm">{degree.level}</p>
                             <button onClick={() => router.push(`/degrees/courses?name=${degree.name}&level=${degree.level}`)} className="bg-blue-500 w-full text-white rounded-lg p-2 mt-4">View Courses</button>
+                            <button onClick={() => router.push(`/degrees/objectives?name=${degree.name}&level=${degree.level}`)} className="bg-blue-500 w-full text-white rounded-lg p-2 mt-4">View Objectives</button>
                             <button onClick={() => router.push(`/degrees/edit?name=${degree.name}&level=${degree.level}`)} className="bg-blue-500 w-full text-white rounded-lg p-2 mt-4">Edit</button>
                         </div>
                     ))}
