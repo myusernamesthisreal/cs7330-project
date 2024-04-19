@@ -16,6 +16,30 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ message: "Missing required fields." }, { status: 400 });
         }
 
+        // check if section's course is part of degree
+        const section = await prisma.section.findUnique({
+            where: {
+                sectionNumber
+            },
+            include: {
+                course: true
+            }
+        });
+        if (!section) {
+            return NextResponse.json({ reason: "Section not found." }, { status: 404 });
+        }
+        const course = section.course;
+        const degreeCourse = await prisma.degreeCourses.findFirst({
+            where: {
+                courseNumber: course.courseNumber,
+                degreeName,
+                degreeLevel
+            }
+        });
+        if (!degreeCourse) {
+            return NextResponse.json({ reason: "Course not part of degree." }, { status: 404 });
+        }
+
         // Create course evaluation
         const evaluation = await prisma.courseEvaluation.create({
             data: {
