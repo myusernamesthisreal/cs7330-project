@@ -1,4 +1,5 @@
 "use client"
+import { Instructor } from "@prisma/client";
 import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
 
@@ -8,6 +9,9 @@ export default function NewSection() {
     const [sectionNumber, setSectionNumber] = useState("");
     const [courseNumber, setCourseNumber] = useState("");
     const [instructorId, setInstructorId] = useState("");
+    const [iSearchQuery, setISearchQuery] = useState("");
+    const [instructors, setInstructors] = useState([] as Instructor[]);
+    const [searched, setSearched] = useState(false);
     const [semester, setSemester] = useState("");
     const [year, setYear] = useState("");
     const [num_students, setNumStudents] = useState("");
@@ -39,6 +43,13 @@ export default function NewSection() {
         setSubmitted(false);
     };
 
+    const handleSearch = async () => {
+        const res = await fetch(`/api/instructors?query=${iSearchQuery}`);
+        const data = await res.json();
+        setInstructors(data);
+        setSearched(true);
+    };
+
     return (
         <>
             <main className="flex min-h-screen flex-col items-center justify-between p-24">
@@ -52,9 +63,22 @@ export default function NewSection() {
                         <p className="text-sm text-gray-300 mb-2">Course Number:</p>
                         <input type="text" placeholder="Course Number" value={courseNumber} onChange={(e) => setCourseNumber(e.target.value)} className="p-2 border border-gray-300 text-black rounded-lg w-full mb-4" />
                     </div>
-                    <div className="w-full">
-                        <p className="text-sm text-gray-300 mb-2">Instructor ID:</p>
-                        <input type="text" placeholder="Instructor ID" value={instructorId} onChange={(e) => setInstructorId(e.target.value)} className="p-2 border border-gray-300 text-black rounded-lg w-full mb-4" />
+                    <div className="w-full mb-4">
+                        <p className="text-sm text-gray-300 mb-2">Search for Instructor</p>
+                        <input type="text" placeholder="Instructor Name/ID" value={iSearchQuery} onChange={(e) => setISearchQuery(e.target.value)} className="p-2 border border-gray-300 text-black rounded-lg w-full mb-4" />
+                        <button className="p-2 bg-blue-500 text-white w-full rounded-lg" onClick={handleSearch}>Search</button>
+                        {searched && (
+                            <div className="mt-4">
+                                <p className="text-sm text-gray-300 mb-2">Select Instructor:</p>
+                                <select value={instructorId} onChange={(e) => setInstructorId(e.target.value)} className="p-2 border border-gray-300 text-black rounded-lg w-full mb-4">
+                                    <option value="">Select</option>
+                                    {instructors.map((i, index) => (
+                                        <option key={index} value={i.id_number}>{i.name}</option>
+                                    ))}
+                                </select>
+                            </div>
+                        )}
+                        {(instructors.length === 0 && searched) && <p className="text-sm text-gray-300 mt-4">No instructors found</p>}
                     </div>
                     <div className="w-full">
                         <p className="text-sm text-gray-300 mb-2">Semester:</p>

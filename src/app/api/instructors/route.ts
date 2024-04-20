@@ -4,6 +4,18 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
     try {
+        if (req.nextUrl.searchParams.has("query")) {
+            const query = req.nextUrl.searchParams.get("query") ?? "";
+            const instructors = await prisma.instructor.findMany({
+                where: {
+                    OR: [
+                        { id_number: { contains: query } },
+                        { name: { contains: query } }
+                    ]
+                }
+            });
+            return NextResponse.json(instructors, { status: 200 });
+        }
         const instructors = await prisma.instructor.findMany();
         return NextResponse.json(instructors, { status: 200 });
     } catch (error) {

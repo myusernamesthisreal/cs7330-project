@@ -3,7 +3,6 @@ import prisma from "@/lib/db"; // make sure this import path aligns with your pr
 import { NextRequest, NextResponse } from "next/server";
 import { Prisma } from "@prisma/client";
 
-
 export async function POST(req: NextRequest) {
     try {
         const data = await req.json();
@@ -15,6 +14,30 @@ export async function POST(req: NextRequest) {
         // Validate required fields
         if (!learningObjectiveId || !sectionNumber || !degreeName || !degreeLevel || type === undefined) {
             return NextResponse.json({ message: "Missing required fields." }, { status: 400 });
+        }
+
+        // check if section's course is part of degree
+        const section = await prisma.section.findUnique({
+            where: {
+                sectionNumber
+            },
+            include: {
+                course: true
+            }
+        });
+        if (!section) {
+            return NextResponse.json({ reason: "Section not found." }, { status: 404 });
+        }
+        const course = section.course;
+        const degreeCourse = await prisma.degreeCourses.findFirst({
+            where: {
+                courseNumber: course.courseNumber,
+                degreeName,
+                degreeLevel
+            }
+        });
+        if (!degreeCourse) {
+            return NextResponse.json({ reason: "Course not part of degree." }, { status: 404 });
         }
 
         // Create course evaluation
@@ -46,6 +69,7 @@ export async function GET(req: NextRequest) {
     const params = req.nextUrl.searchParams;
     const sectionNumber = params.get('sectionNumber');
     const degreeName = params.get('degreeName');
+    const degreeLevel = params.get('degreeLevel');
     const learningObjectiveId = params.get('learningObjectiveId');
 
     try {
@@ -53,6 +77,7 @@ export async function GET(req: NextRequest) {
             where: {
                 ...(sectionNumber ? { sectionNumber } : {}),
                 ...(degreeName ? { degreeName } : {}),
+                ...(degreeLevel ? { degreeLevel } : {}),
                 ...(learningObjectiveId ? { learningObjectiveId: parseInt(learningObjectiveId) } : {})
             },
             include: {
