@@ -15,6 +15,9 @@ export default function Home() {
           <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4" onClick={() => router.push("/courses")}>
             View Courses
           </button>
+          <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4" onClick={() => router.push("/semesters")}>
+            View Semesters
+          </button>
           <h2 className="text-2xl font-bold text-center mt-4">Create New:</h2>
           <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4" onClick={() => router.push("/degrees/new")}>
             Add Degree
