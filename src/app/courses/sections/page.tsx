@@ -17,8 +17,10 @@ export default function SectionsPage() {
     const [endYear, setEndYear] = useState("");
     const [sections, setSections] = useState([] as SectionWithCourseDetails[]);
     const [loading, setLoading] = useState(false);
+    const [loaded, setLoaded] = useState(false);
 
     const handleFetchSections = async () => {
+        setError("");
         setLoading(true);
         const res = await fetch(`/api/coursesections?courseNumber=${courseNumber}&startSemester=${startSemester}&startYear=${startYear}&endSemester=${endSemester}&endYear=${endYear}`);
         if (res.ok) {
@@ -30,6 +32,7 @@ export default function SectionsPage() {
             setError(data.reason || "Something went wrong");
             setLoading(false);
         }
+        setLoaded(true);
     }
 
 
@@ -73,6 +76,7 @@ export default function SectionsPage() {
                         </div>
                     ))}
                     {loading && <p className="text-gray-300 text-sm mt-4">Loading...</p>}
+                    {loaded && sections.length === 0 && <p className="text-gray-300 text-sm mt-4">No sections found</p>}
                     <div className="flex justify-between w-full mt-4">
                         <button onClick={() => router.push("/")} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4  self-start">Back</button>
                     <button onClick={handleFetchSections} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4 self-start">Fetch Sections</button>
