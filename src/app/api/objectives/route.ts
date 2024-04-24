@@ -4,7 +4,27 @@ import { NextRequest, NextResponse } from "next/server";
 import { Prisma } from "@prisma/client";
 
 export async function GET(req: NextRequest) {
-    if (req.nextUrl.searchParams.has("courseNumber")) {
+    if (req.nextUrl.searchParams.has("query")) {
+        const query = req.nextUrl.searchParams.get("query") ?? "";
+        const objectives = await prisma.learningObjective.findMany({
+            where: {
+                OR: [
+                    {
+                        title: {
+                            contains: query,
+                        }
+                    },
+                    {
+                        description: {
+                            contains: query,
+                        }
+                    }
+                ]
+            }
+        });
+        return NextResponse.json(objectives, { status: 200 });
+    }
+    else if (req.nextUrl.searchParams.has("courseNumber")) {
         const courseNumber = req.nextUrl.searchParams.get("courseNumber") ?? "";
         const objectives = await prisma.courseObjective.findMany({
             where: {
