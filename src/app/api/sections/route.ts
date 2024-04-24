@@ -105,7 +105,29 @@ export async function GET(req: NextRequest) {
                     evaluations: true,
                 }
             });
-            return NextResponse.json(sections, { status: 200 });
+
+            const objectives = await prisma.courseObjective.findMany({
+                where: {
+                    courseNumber: {
+                        in: sections.map(section => section.courseNumber)
+                    },
+                },
+                include: {
+                    learningObjective: true,
+                }
+            });
+
+            const sectionsWithEvaluationStatus = sections.map(section => {
+                const sectionObjectives = objectives.filter(objective => objective.courseNumber === section.courseNumber).map(objective => objective.learningObjective);
+                const sectionEvaluations = section.evaluations.map(evaluation => evaluation.learningObjectiveId);
+                const isEvaluated = sectionObjectives.every(objective => sectionEvaluations.includes(objective.id));
+                return {
+                    ...section,
+                    isEvaluated,
+                };
+            });
+
+            return NextResponse.json(sectionsWithEvaluationStatus, { status: 200 });
         }
         const sections = await prisma.section.findMany();
 

@@ -6,7 +6,7 @@ import { useEffect, useState } from "react"
 export default function ViewSemester() {
     const router = useRouter();
     const query = useSearchParams();
-    const [sections, setSections] = useState([] as (Section & { instructor: Instructor, course: Course, evaluations: CourseEvaluation[] })[]);
+    const [sections, setSections] = useState([] as (Section & { instructor: Instructor, course: Course, evaluations: CourseEvaluation[], isEvaluated: Boolean })[]);
     const [targetGrade, setTargetGrade] = useState(0);
 
     const findNumGrades = (section: (Section & { instructor: Instructor, course: Course, evaluations: CourseEvaluation[] })) => {
@@ -44,8 +44,7 @@ export default function ViewSemester() {
                                 <p className="text-sm">Instructor: {section.instructor.name}</p>
                                 <p className="text-sm">Number of Students: {section.num_students}</p>
                                 <div className="flex-grow min-h-8" />
-                                {section.evaluations.length === 0 && <p className="text-lg text-red-500">No evaluations!</p>}
-                                {section.evaluations.length > 0 && <p className="text-lg text-green-500">Evaluations entered</p>}
+                                {section.evaluations.length > 0 && section.isEvaluated ? <p className="text-lg text-green-500">Evaluations entered</p> : section.evaluations.length > 0 ? <p className="text-lg text-yellow-500">Evaluations partially entered</p> : <p className="text-lg text-red-500">No evaluations!</p>}
                                 {targetGrade !== 0 && <>
                                     <p className="text-sm">Evaluations with grade {targetGrade} or higher: {findNumGrades(section)}</p>
                                 </>}
