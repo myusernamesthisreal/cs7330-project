@@ -34,22 +34,33 @@ export async function GET(req: NextRequest) {
                         },
                         { semester },
                         { year: Number(year) },
-                        { instructorId: InstructorId },
+                        { instructorId: InstructorId }, 
                     ],
                 },
                 include: {
-                    instructor: true,
+                    instructor: 
+                            true,
+            
                 }
             });
+            // Add the instructor's name to each section
+            // const sectionsWithInstructorName = sections.map(section => ({
+            //     ...section,
+            //     name: section.instructor.name,
+                
+            // // }));
+            // return NextResponse.json(sectionsWithInstructorName, { status: 200 });
             return NextResponse.json(sections, { status: 200 });
         }
         const sections = await prisma.section.findMany();
+        
 
         // Format the dates to a date-only string
         const formattedSections = sections.map(section => ({
             ...section,
             startDate: section.startDate.toISOString().split('T')[0],
-            endDate: section.endDate.toISOString().split('T')[0]
+            endDate: section.endDate.toISOString().split('T')[0],
+            
         }));
 
         return NextResponse.json(formattedSections, { status: 200 });
@@ -114,3 +125,39 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ reason: "Something went wrong" }, { status: 500 });
     }
 }
+
+
+
+export async function DELETE(req: NextRequest) {
+    try {
+        const data = await req.json();
+        const { sectionNumbers } = data; // Expecting an array of section numbers
+        
+        if (!Array.isArray(sectionNumbers)) {
+            return NextResponse.json({ reason: "sectionNumbers must be an array" }, { status: 400 });
+        }
+
+        if (sectionNumbers.some(sectionNumber => typeof sectionNumber !== 'string')) {
+            return NextResponse.json({ reason: "Each sectionNumber must be a string" }, { status: 400 });
+        }
+
+        // Attempt to delete sections
+        const deleteResult = await prisma.section.deleteMany({
+            where: {
+                sectionNumber: {
+                    in: sectionNumbers
+                }
+            }
+        });
+
+        if (deleteResult.count === 0) {
+            return NextResponse.json({ reason: "No sections found or deleted" }, { status: 404 });
+        }
+
+        return NextResponse.json({ message: "Sections deleted successfully", count: deleteResult.count }, { status: 200 });
+    } catch (error: any) {
+        console.error("Error deleting sections:", error);
+        return NextResponse.json({ reason: "Something went wrong", error: error.message }, { status: 500 });
+    }
+}
+

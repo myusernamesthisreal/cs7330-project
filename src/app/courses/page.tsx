@@ -1,11 +1,13 @@
 "use client"
 import { Course } from "@prisma/client";
 import { useRouter } from "next/navigation";
+import React from "react";
 import { useEffect, useState } from "react"
 
 export default function ViewCourses() {
     const [courses, setCourses] = useState([] as Course[]);
     const router = useRouter();
+    
     useEffect(() => {
         const handleFetch = async () => {
             const res = await fetch("/api/courses");
@@ -14,6 +16,8 @@ export default function ViewCourses() {
         }
         handleFetch();
     }, [])
+
+    
     return (
         <>
             <main className="flex flex-col items-center justify-between p-24">
@@ -24,6 +28,7 @@ export default function ViewCourses() {
                         <div key={index} className="w-full p-4 border border-gray-300 rounded-lg mb-4">
                             <p className="text-lg font-bold">{course.name}</p>
                             <p className="text-sm">{course.courseNumber}</p>
+                            <button onClick={() => router.push(`/courses/sections?name=${course.courseNumber}`)} className="bg-blue-500 w-full text-white rounded-lg p-2 mt-4">View Sections</button>
                             <button onClick={() => router.push(`/courses/edit?courseNumber=${course.courseNumber}`)} className="bg-blue-500 w-full text-white rounded-lg p-2 mt-4">Edit</button>
                         </div>
                     ))}
