@@ -1,6 +1,7 @@
 "use client"
 import { Instructor } from "@prisma/client";
 import { useRouter } from "next/navigation";
+import React from "react";
 import { FormEvent, useState } from "react";
 
 export default function NewSection() {
