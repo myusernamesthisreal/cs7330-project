@@ -18,6 +18,7 @@ export default function DegreeSections() {
     const [error, setError] = useState("");
 
     const handleSubmit = async () => {
+        setError("");
         if (!startSemester || !startYear || !endSemester || !endYear) {
             setError("Please fill out all fields");
             return;
@@ -31,7 +32,7 @@ export default function DegreeSections() {
     return (
         <>
             <main className="flex min-h-screen flex-col items-center justify-between p-24">
-                <div className="z-10 max-w-5xl w-full items-center justify-between text-sm lg:flex lg:flex-col">
+                <div className="z-10 max-w-5xl items-center justify-between text-sm lg:flex lg:flex-col">
                     <h1 className="text-4xl font-bold text-center mb-4">Sections for {query.get("level")} {query.get("name")}</h1>
                     <div className="w-full">
                         <p className="text-sm text-gray-300 mb-2">Start Semester:</p>
