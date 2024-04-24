@@ -38,7 +38,7 @@ export default function ViewTaught() {
             <main className="flex min-h-screen flex-col items-center justify-between p-24">
                 <div className="z-10 max-w-xl w-full items-center justify-between text-sm lg:flex lg:flex-col">
                     <h1 className="text-4xl font-bold text-center mb-4">Sections Taught</h1>
-                    
+
                     <div className="w-full">
                         <p className="text-sm text-gray-300 mb-2">Start Semester:</p>
                         <select value={startSemester} onChange={(e) => setStartSemester(e.target.value)} className="p-2 border border-gray-300 text-black rounded-lg w-full mb-4">
@@ -58,12 +58,14 @@ export default function ViewTaught() {
                         </select>
                         <p className="text-sm text-gray-300 mb-2">End Year:</p>
                         <input type="number" placeholder="End Year" value={endYear} onChange={(e) => setEndYear(e.target.value)} className="p-2 border border-gray-300 text-black rounded-lg w-full mb-4" />
-                        <button onClick={handleSubmit} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4 mx-auto block">Submit</button>                    
+                        <button onClick={handleSubmit} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4 mx-auto block">Submit</button>
                     </div>
+                    {sections.length > 0 &&
+                    <>
                     <h2 className="text-2xl font-bold text-center mt-4">Courses</h2>
                     <br />
                     <div className="grid grid-cols-3 gap-4">
-                    {sections && sections.map((section, index) => (
+                    {sections.map((section, index) => (
                         <div key={index} className="w-full p-4 border border-gray-300 rounded-lg mb-4">
                             <p className="text-lg font-bold">{section.courseNumber}</p>
                             <p className="text-sm">{section.sectionNumber}</p>
@@ -71,6 +73,8 @@ export default function ViewTaught() {
                         </div>
                     ))}
                     </div>
+                    </>
+                    }
                     {error && <p className="text-red-500">Error: {error}</p>}
                     <button onClick={() => router.push("/instructors")} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4 self-start">Back</button>
                 </div>

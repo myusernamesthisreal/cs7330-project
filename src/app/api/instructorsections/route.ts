@@ -1,5 +1,4 @@
 import prisma from "@/lib/db";
-import { Prisma } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 
 const semesterDates: Record<string, { start: string; end: string }> = {
@@ -16,15 +15,14 @@ export async function GET(req: NextRequest) {
     const startYear = searchParams.get('startYear') ?? "";
     const endSemester = searchParams.get('endSemester') ?? "";
     const endYear = searchParams.get('endYear') ?? "";
-    
-    const startDate = new Date(startYear + semesterDates[startSemester].start);
-    const endDate = new Date(endYear + semesterDates[endSemester].end);
 
     if (!instructorId || !startSemester || !endSemester) {
         return NextResponse.json({ reason: "Missing required parameters" }, { status: 400 });
     }
 
     try {
+        const startDate = new Date(startYear + semesterDates[startSemester].start);
+        const endDate = new Date(endYear + semesterDates[endSemester].end);
         const instructorsections = await prisma.section.findMany({
             where: {
                 AND: [
@@ -32,9 +30,9 @@ export async function GET(req: NextRequest) {
                     { startDate: { gte: startDate } },
                     { endDate: { lte: endDate } }
                 ],
-                
+
             },
-            
+
             include: {
                 course: {
                     select: {
@@ -52,7 +50,7 @@ export async function GET(req: NextRequest) {
                 startDate: 'asc'
             }
         });
-        
+
         // Transform the structure of sections to flatten them
         const sectionsTaught = instructorsections.map(section => ({
             sectionNumber: section.sectionNumber,
@@ -70,11 +68,11 @@ export async function GET(req: NextRequest) {
         if (sectionsTaught.length === 0) {
             return NextResponse.json({ reason: "No sections found" }, { status: 404 });
         }
-    
+
         return NextResponse.json({ sectionsTaught }, { status: 200 });
     }
     catch (error) {
-        console.error("Fail to retrieve sections: ",error);
+        console.error("Fail to retrieve sections: ", error);
         return NextResponse.json({ reason: "Internal server error" }, { status: 500 });
     }
 }

@@ -23,7 +23,7 @@ export default function ViewInstructors() {
                     {instructors.map((instructor, index) => (
                         <div key={index} className="w-full p-4 border border-gray-300 rounded-lg mb-4">
                             <p className="text-lg font-bold">{instructor.name}</p>
-                            <p className="text-sm">{instructor.id_number}</p>
+                            <p className="text-sm">ID: {instructor.id_number}</p>
                             <button onClick={() => router.push(`/instructors/view?id_number=${instructor.id_number}`)} className="bg-blue-500 w-full text-white rounded-lg p-2 mt-4">View Taught</button>
                         </div>
                     ))}
