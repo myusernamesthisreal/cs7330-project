@@ -52,6 +52,22 @@ export async function GET(req: NextRequest) {
             // return NextResponse.json(sectionsWithInstructorName, { status: 200 });
             return NextResponse.json(sections, { status: 200 });
         }
+        else if (req.nextUrl.searchParams.has("semester") && req.nextUrl.searchParams.has("year")) {
+            const semester = req.nextUrl.searchParams.get("semester") ?? "";
+            const year = req.nextUrl.searchParams.get("year") ?? "";
+            const sections = await prisma.section.findMany({
+                where: {
+                    semester,
+                    year: Number(year),
+                },
+                include: {
+                    instructor: true,
+                    course: true,
+                    evaluations: true,
+                }
+            });
+            return NextResponse.json(sections, { status: 200 });
+        }
         const sections = await prisma.section.findMany();
         
 
