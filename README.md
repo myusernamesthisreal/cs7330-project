@@ -19,6 +19,12 @@ A sample .env file is provided in the [.env.example](.env.example) file. Copy th
 cp .env.example .env
 ```
 
+Create the database tables and run the migrations:
+
+```bash
+npx prisma db push
+```
+
 To run the project, use the following command:
 
 ```bash
