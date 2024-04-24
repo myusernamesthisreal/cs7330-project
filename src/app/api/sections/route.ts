@@ -11,7 +11,55 @@ const semesterDates: Record<string, { start: string; end: string }> = {
 
 export async function GET(req: NextRequest) {
     try {
-        if (req.nextUrl.searchParams.has("degreeName") && req.nextUrl.searchParams.has("degreeLevel") && req.nextUrl.searchParams.has("semester") && req.nextUrl.searchParams.has("year") && req.nextUrl.searchParams.has("InstructorId")) {
+        if (req.nextUrl.searchParams.has("startSemester") && req.nextUrl.searchParams.has("startYear") && req.nextUrl.searchParams.has("endSemester") && req.nextUrl.searchParams.has("endYear") && req.nextUrl.searchParams.has("degreeName") && req.nextUrl.searchParams.has("degreeLevel")) {
+            const startSemester = req.nextUrl.searchParams.get("startSemester") ?? "";
+            const startYear = req.nextUrl.searchParams.get("startYear") ?? "";
+            const endSemester = req.nextUrl.searchParams.get("endSemester") ?? "";
+            const endYear = req.nextUrl.searchParams.get("endYear") ?? "";
+            const degreeName = req.nextUrl.searchParams.get("degreeName") ?? "";
+            const degreeLevel = req.nextUrl.searchParams.get("degreeLevel") ?? "";
+
+            const startDate = new Date(`${startYear}${semesterDates[startSemester].start}`);
+            const endDate = new Date(`${endYear}${semesterDates[endSemester].end}`);
+
+            const sections = await prisma.section.findMany({
+                where: {
+                    AND: [
+                        { startDate: { gte: startDate } },
+                        { endDate: { lte: endDate } },
+                        {
+                            course: {
+                                courseDegrees: {
+                                    some: {
+                                        degree: {
+                                            name: degreeName,
+                                            level: degreeLevel,
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    ]
+                },
+                include: {
+                    course: true,
+                    instructor: true
+                },
+                orderBy: [
+                    { startDate: 'asc' },
+                ]
+            });
+
+            // Format the dates to a date-only string
+            const formattedSections = sections.map(section => ({
+                ...section,
+                startDate: section.startDate.toISOString().split('T')[0],
+                endDate: section.endDate.toISOString().split('T')[0],
+            }));
+
+            return NextResponse.json(formattedSections, { status: 200 });
+        }
+        else if (req.nextUrl.searchParams.has("degreeName") && req.nextUrl.searchParams.has("degreeLevel") && req.nextUrl.searchParams.has("semester") && req.nextUrl.searchParams.has("year") && req.nextUrl.searchParams.has("InstructorId")) {
             const degreeName = req.nextUrl.searchParams.get("degreeName") ?? "";
             const degreeLevel = req.nextUrl.searchParams.get("degreeLevel") ?? "";
             const semester = req.nextUrl.searchParams.get("semester") ?? "";
@@ -34,22 +82,13 @@ export async function GET(req: NextRequest) {
                         },
                         { semester },
                         { year: Number(year) },
-                        { instructorId: InstructorId }, 
+                        { instructorId: InstructorId },
                     ],
                 },
                 include: {
-                    instructor: 
-                            true,
-            
+                    instructor: true,
                 }
             });
-            // Add the instructor's name to each section
-            // const sectionsWithInstructorName = sections.map(section => ({
-            //     ...section,
-            //     name: section.instructor.name,
-                
-            // // }));
-            // return NextResponse.json(sectionsWithInstructorName, { status: 200 });
             return NextResponse.json(sections, { status: 200 });
         }
         else if (req.nextUrl.searchParams.has("semester") && req.nextUrl.searchParams.has("year")) {
@@ -69,14 +108,14 @@ export async function GET(req: NextRequest) {
             return NextResponse.json(sections, { status: 200 });
         }
         const sections = await prisma.section.findMany();
-        
+
 
         // Format the dates to a date-only string
         const formattedSections = sections.map(section => ({
             ...section,
             startDate: section.startDate.toISOString().split('T')[0],
             endDate: section.endDate.toISOString().split('T')[0],
-            
+
         }));
 
         return NextResponse.json(formattedSections, { status: 200 });
@@ -148,7 +187,7 @@ export async function DELETE(req: NextRequest) {
     try {
         const data = await req.json();
         const { sectionNumbers } = data; // Expecting an array of section numbers
-        
+
         if (!Array.isArray(sectionNumbers)) {
             return NextResponse.json({ reason: "sectionNumbers must be an array" }, { status: 400 });
         }
@@ -176,4 +215,3 @@ export async function DELETE(req: NextRequest) {
         return NextResponse.json({ reason: "Something went wrong", error: error.message }, { status: 500 });
     }
 }
-
