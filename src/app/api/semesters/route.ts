@@ -5,11 +5,14 @@ export async function GET(req: NextRequest) {
     try {
         const semesters = await prisma.section.findMany(
             {
-                distinct: ['semester', 'year'],
+                distinct: ["year", "semester"],
                 select: {
                     semester: true,
-                    year: true
-                }
+                    year: true,
+                },
+                orderBy: [
+                    { startDate: "desc" }
+                ]
             }
         );
         return NextResponse.json(semesters, { status: 200 });
