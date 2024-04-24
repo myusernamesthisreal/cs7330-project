@@ -74,9 +74,8 @@ export default function SectionsPage() {
                     ))}
                     {loading && <p className="text-gray-300 text-sm mt-4">Loading...</p>}
                     <div className="flex justify-between w-full mt-4">
+                        <button onClick={() => router.push("/")} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4  self-start">Back</button>
                     <button onClick={handleFetchSections} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4 self-start">Fetch Sections</button>
-
-                    <button onClick={() => router.push("/")} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4  self-start">Back</button>
                     </div>
                 </div>
 
