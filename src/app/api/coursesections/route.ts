@@ -22,7 +22,7 @@ export async function GET(req: NextRequest) {
             if (!courseNumber || !startSemester || !startYear || !endSemester || !endYear) {
                 return NextResponse.json({ reason: "Missing required query parameters" }, { status: 400 });
             }
-            const startDate = new Date(`${startYear}${semesterDates[startSemester].start}`);  
+            const startDate = new Date(`${startYear}${semesterDates[startSemester].start}`);
             const endDate = new Date(`${endYear}${semesterDates[endSemester].end}`);
 
             // Query to find sections that match the course number and semester range
@@ -31,13 +31,14 @@ export async function GET(req: NextRequest) {
                     courseNumber,
 
                     AND: [
-                        
-                        {startDate: {gte: startDate}},
-                        {endDate: {lte: endDate} }
+
+                        { startDate: { gte: startDate } },
+                        { endDate: { lte: endDate } }
                     ]
                 },
                 include: {
                     course: true,
+                    instructor: true
                 },
                 orderBy: [
                     { year: 'asc' },
@@ -55,6 +56,7 @@ export async function GET(req: NextRequest) {
             return NextResponse.json(formattedSections, { status: 200 });
         } else {
             // Existing code...
+            return NextResponse.json({ reason: "Missing required query parameters" }, { status: 400 });
         }
     } catch (error) {
         console.error("Error fetching sections:", error);
