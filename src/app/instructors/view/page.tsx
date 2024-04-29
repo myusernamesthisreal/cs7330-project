@@ -58,25 +58,29 @@ export default function ViewTaught() {
                         </select>
                         <p className="text-sm text-gray-300 mb-2">End Year:</p>
                         <input type="number" placeholder="End Year" value={endYear} onChange={(e) => setEndYear(e.target.value)} className="p-2 border border-gray-300 text-black rounded-lg w-full mb-4" />
-                        <button onClick={handleSubmit} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4 mx-auto block">Submit</button>
                     </div>
                     {sections.length > 0 &&
                     <>
-                    <h2 className="text-2xl font-bold text-center mt-4">Courses</h2>
+                    <h2 className="text-2xl font-bold text-center mt-4">Section</h2>
                     <br />
-                    <div className="grid grid-cols-3 gap-4">
+
                     {sections.map((section, index) => (
                         <div key={index} className="w-full p-4 border border-gray-300 rounded-lg mb-4">
-                            <p className="text-lg font-bold">{section.courseNumber}</p>
-                            <p className="text-sm">{section.sectionNumber}</p>
-                            <p className="text-sm">{section.semester} {section.year}</p>
+                            <p className="text-lg font-bold">Section {section.sectionNumber}</p>
+                            <p className="text-sm">{section.courseNumber}</p>
+                            <p>Students: {section.num_students}</p>
+                            <p>Semester: {section.semester} {section.year}</p>
                         </div>
                     ))}
-                    </div>
+                    
                     </>
                     }
                     {error && <p className="text-red-500">Error: {error}</p>}
-                    <button onClick={() => router.push("/instructors")} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4 self-start">Back</button>
+                    <div className="flex justify-between w-full mt-4">
+                        <button onClick={() => router.push("/")} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4  self-start">Back</button>
+                        <button onClick={handleSubmit} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4 self-start">Submit</button>
+
+                    </div>
                 </div>
             </main>
         </>
